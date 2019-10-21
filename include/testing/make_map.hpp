@@ -39,38 +39,38 @@ std::pair<std::remove_reference_t<A>, std::remove_reference_t<B>> create_pair(A&
 }
 
 
-    //std::pair pair = std::make_pair(LogLevel::Control, LogLevel::Critical);
-    // std::unordered_map<LogLevel, CharStream> testMap2 = make_map<LogLevel, CharStream>(std::pair<LogLevel, CharStream>(LogLevel::Critical, LogLevel::Critical));
+    //std::pair pair = std::make_pair(EtLogLevel::Control, EtLogLevel::Critical);
+    // std::unordered_map<EtLogLevel, CharStream> testMap2 = make_map<EtLogLevel, CharStream>(std::pair<EtLogLevel, CharStream>(EtLogLevel::Critical, EtLogLevel::Critical));
     
-    // //auto it = testMap2.find(LogLevel::Critical);
+    // //auto it = testMap2.find(EtLogLevel::Critical);
 
     // //(it->second) << "test" << std::endl;
 
-    // std::unordered_map<LogLevel, CharStream> testMap  = make_map<LogLevel, CharStream>(create_pair<LogLevel, CharStream>(LogLevel::Critical));
-    // auto it = testMap.find(LogLevel::Critical);
+    // std::unordered_map<EtLogLevel, CharStream> testMap  = make_map<EtLogLevel, CharStream>(create_pair<EtLogLevel, CharStream>(EtLogLevel::Critical));
+    // auto it = testMap.find(EtLogLevel::Critical);
     // if (it != testMap.end()) {
     //     CharStream &str = it->second;
     //      str<<"test" << std::endl;
     // }
-    // //testMap[LogLevel::Control];
+    // //testMap[EtLogLevel::Control];
 
     //  CharStream &str2 = m_logStreamBufs[0];
     //   str2 << "aber"<< std::endl;
-   // testMap[LogLevel::Critical] << "hallo" << std::endl;
-    // make_map<LogLevel, LogLevel>(pair2);
+   // testMap[EtLogLevel::Critical] << "hallo" << std::endl;
+    // make_map<EtLogLevel, EtLogLevel>(pair2);
     
 
 
     //testMap.reserve(3);
     //testMap.emplace(pair);
-    // //std::map<LogLevel, LogLevel> testMap = {{LogLevel::Control, LogLevel::Error}};
+    // //std::map<EtLogLevel, EtLogLevel> testMap = {{EtLogLevel::Control, EtLogLevel::Error}};
 
 
 
     // std::ostream os (&m_logStreamBufs[0]);
     // os << "halddfdflo" << std::endl;
 
-    // CEtLogStream<char> test (LogLevel::Error);
+    // CEtLogStream<char> test (EtLogLevel::Error);
     // test << "baldlf" << std::endl;
 
     // CEtLogStream<char> test2 (std::move(test));
