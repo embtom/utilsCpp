@@ -23,13 +23,14 @@
       by `czu::unique_opaque<T>`
 */
 
-namespace utils {
-template<typename T>
-struct opaque_deleter {
-    void operator()(T *it) {
-        void opaque_deleter_hook(T *);
-        opaque_deleter_hook(it);
-    }
+namespace utils 
+{
+  template<typename T>
+  struct opaque_deleter {
+      void operator()(T *it) {
+          void opaque_deleter_hook(T *);
+          opaque_deleter_hook(it);
+      }
 };
 
 template<typename T>
