@@ -27,6 +27,9 @@
 #define _MAPCONTAINER_H_
 
 #include <array>
+#include <algorithm>
+
+
 
 namespace utils 
 {
@@ -39,7 +42,6 @@ namespace utils
             virtual unsigned int count() const noexcept = 0;
             virtual T* data() const noexcept = 0;
     };
-
 
     template<typename T,int N>
     class CMapContainer final : public CMapContainerBase<T>
@@ -62,10 +64,17 @@ namespace utils
                 return m_map.size();
             }    
 
-            T* data() const noexcept override
+            constexpr T* data() const noexcept override
             {
                 return const_cast<T*>(m_map.data());
-            }            
+            }
+
+            //
+            template<typename Func>
+            void foreach(Func f)
+            {
+                std::for_each(m_map.begin(), m_map.end(), f);
+            }        
         private:
             std::array<T, N> m_map;
     };
