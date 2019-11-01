@@ -23,11 +23,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef _ENUM_REFLECT_H_
+#define _ENUM_REFLECT_H_
+
 #pragma once
 #include <type_traits>
 #include <map>
 #include <regex>
 #include <ostream>
+
 
 
 template<typename Enum, class Enable = void>
@@ -116,6 +120,12 @@ std::ostream &operator <<(std::ostream &out, const Enum value)
     return out;
 }
 
+template <typename ... T>
+constexpr size_t countLength(T ... args)
+{
+    null(args...); //kill warnings
+    return sizeof...(args);
+}
 
 #define DECLARE_ENUM(name, basetype, ...)                                         \
     enum class name : basetype { __VA_ARGS__ };                                    \
@@ -126,3 +136,4 @@ std::ostream &operator <<(std::ostream &out, const Enum value)
     };                                                                  
 
 
+#endif /* _ENUM_REFLECT_H_ */

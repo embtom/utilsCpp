@@ -36,30 +36,33 @@ namespace utils
         public:
             virtual ~CMapContainerBase() = default;
             virtual size_t size() const noexcept = 0;
+            virtual unsigned int count() const noexcept = 0;
             virtual T* data() const noexcept = 0;
     };
 
 
     template<typename T,int N>
-    class CMapContainer : public CMapContainerBase<T>
+    class CMapContainer final : public CMapContainerBase<T>
     {
         public:
+            constexpr CMapContainer() = default;
+
             template<typename ...Args>
             constexpr CMapContainer(Args&&... args) noexcept : 
                 m_map({std::forward<Args>(args)...})
             { };
 
-            size_t size() const noexcept
+            constexpr size_t size() const noexcept override
             { 
                 return (sizeof(T) * m_map.size());
             }
             
-            unsigned int count() const noexcept
+            constexpr unsigned int count() const noexcept override
             {
                 return m_map.size();
             }    
 
-            T* data() const noexcept
+            T* data() const noexcept override
             {
                 return const_cast<T*>(m_map.data());
             }            

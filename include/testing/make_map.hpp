@@ -40,21 +40,21 @@ std::pair<std::remove_reference_t<A>, std::remove_reference_t<B>> create_pair(A&
 
 
     //std::pair pair = std::make_pair(EtLogLevel::Control, EtLogLevel::Critical);
-    // std::unordered_map<EtLogLevel, CharIOStream> testMap2 = make_map<EtLogLevel, CharIOStream>(std::pair<EtLogLevel, CharIOStream>(EtLogLevel::Critical, EtLogLevel::Critical));
+    // std::unordered_map<EtLogLevel, CharIoStream> testMap2 = make_map<EtLogLevel, CharIoStream>(std::pair<EtLogLevel, CharIoStream>(EtLogLevel::Critical, EtLogLevel::Critical));
     
     // //auto it = testMap2.find(EtLogLevel::Critical);
 
     // //(it->second) << "test" << std::endl;
 
-    // std::unordered_map<EtLogLevel, CharIOStream> testMap  = make_map<EtLogLevel, CharIOStream>(create_pair<EtLogLevel, CharIOStream>(EtLogLevel::Critical));
+    // std::unordered_map<EtLogLevel, CharIoStream> testMap  = make_map<EtLogLevel, CharIoStream>(create_pair<EtLogLevel, CharIoStream>(EtLogLevel::Critical));
     // auto it = testMap.find(EtLogLevel::Critical);
     // if (it != testMap.end()) {
-    //     CharIOStream &str = it->second;
+    //     CharIoStream &str = it->second;
     //      str<<"test" << std::endl;
     // }
     // //testMap[EtLogLevel::Control];
 
-    //  CharIOStream &str2 = m_logStreamBufs[0];
+    //  CharIoStream &str2 = m_logStreamBufs[0];
     //   str2 << "aber"<< std::endl;
    // testMap[EtLogLevel::Critical] << "hallo" << std::endl;
     // make_map<EtLogLevel, EtLogLevel>(pair2);
