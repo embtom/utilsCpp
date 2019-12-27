@@ -62,7 +62,12 @@ public:
             std::string enumValue = sm[2].str();
 
             if (enumValue.length() != 0) {
-                value = atoi(enumValue.c_str());
+                if(enumValue.compare(0,2,"0b") == 0) {
+                    value = std::stoi(enumValue.substr(2), nullptr, 2);    
+                }
+                else {
+                    value = std::stoi(enumValue,nullptr,0);
+                }
             }
 
             Enum enumEntry = static_cast<Enum>(value);

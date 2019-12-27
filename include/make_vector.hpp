@@ -34,14 +34,12 @@ namespace utils {
 
     template <typename T, typename First, typename... Rest>
     struct all_constructible_and_convertible<T, First, Rest...>
-        : std::conditional<
-            std::is_constructible<T, First>::value &&
-                std::is_convertible<First, T>::value,
-            all_constructible_and_convertible<T, Rest...>,
+        : std::conditional<std::is_constructible<T, First>::value &&
+          std::is_convertible<First, T>::value, all_constructible_and_convertible<T, Rest...>,
             std::false_type>::type {};
 
-    template <typename T, typename... Args, typename std::enable_if<
-            !std::is_trivially_copyable<T>::value, int>::type = 0>
+    template <typename T, typename... Args, 
+              typename std::enable_if<!std::is_trivially_copyable<T>::value, int>::type = 0>
     std::vector<T> make_vector_impl(Args&&... args)
     {
         std::vector<T> vec;
@@ -51,8 +49,8 @@ namespace utils {
         return vec;
     }
 
-    template <typename T, typename... Args, typename std::enable_if<
-            std::is_trivially_copyable<T>::value, int>::type = 0>
+    template <typename T, typename... Args, 
+              typename std::enable_if<std::is_trivially_copyable<T>::value, int>::type = 0>
     std::vector<T> make_vector_impl(Args&&... args)
     {
         return std::vector<T>{std::forward<Args>(args)...};
@@ -63,8 +61,7 @@ namespace utils {
 
 template <typename T = void, typename... Args,
           typename V = detail::vec_type_helper_t<T, Args...>,
-          typename std::enable_if<
-              detail::all_constructible_and_convertible<V, Args...>::value, int>::type = 0>
+          typename std::enable_if<detail::all_constructible_and_convertible<V, Args...>::value, int>::type = 0>
 std::vector<V> make_vector(Args&&... args)
 {
     return detail::make_vector_impl<V>(std::forward<Args>(args)...);
