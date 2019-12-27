@@ -25,103 +25,155 @@
 
 //******************************************************************************
 // Header
+
 #include "fdSet.h"
 #include <sstream> //std::stringstream
 #include <string.h> //strerror
 #include <errno.h> //errno
 #include <unistd.h> //write, close
-#include <sys/select.h> //select
+#include <sys/epoll.h> //epoll
+#include <error_msg.hpp> //buildErrorMessage
 
 
-using namespace utils;
+namespace utils
+{
+struct event_data 
+{
+   int fd;
+   CFdSet::Callback cb;
+};
 
 //*****************************************************************************
-// Method definitions "CFdSet"
-CFdSet::CFdSet()
+//! \brief CFdSet
+//!
+class CFdSetPrivate
+{
+
+public:
+   CFdSetPrivate(unsigned int maxEvents);
+   ~CFdSetPrivate();
+   void AddFd(int fd, CFdSet::Callback cb);
+   CFdSetRetval Select();
+   void UnBlock();
+
+private:
+   const int               m_maxEvents;
+   std::vector<event_data> m_eventData;
+   int                     m_epollFd {0};
+   int                     m_unBlockFd[2];
+};
+} //utils
+
+using namespace utils;
+CZU_DEFINE_OPAQUE_DELETER(CFdSetPrivate)
+
+//*****************************************************************************
+// Method definitions "CFdSetPrivate"
+
+CFdSetPrivate::CFdSetPrivate(unsigned int maxEvents) :
+   m_maxEvents(m_maxEvents)
 {
    if(pipe(m_unBlockFd) == -1)
    {
-      std::stringstream ss;
-      ss << "Failed to create pipe with error: " << strerror(errno);
-      throw std::runtime_error(ss.str());
+      throw std::runtime_error(utils::buildErrorMessage("CFdSet::", __func__, " Failed to create pipe with error: ", strerror(errno)));
    }
+
+   int ret = epoll_create1(EPOLL_CLOEXEC);
+   if (ret == -1)
+   {
+      close(m_unBlockFd[0]);
+      close(m_unBlockFd[1]);
+      throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::", __func__, " Failed to open epoll with error: ", strerror(errno)));
+   }
+   m_epollFd = ret;
+   m_eventData.reserve(maxEvents);
+
+   AddFd(m_unBlockFd[1], nullptr);
 }
 
-CFdSet::~CFdSet()
+CFdSetPrivate::~CFdSetPrivate()
 {
    UnBlock();
+   close(m_epollFd);
    close(m_unBlockFd[0]);
    close(m_unBlockFd[1]);
 }
 
-void CFdSet::AddFd(int fd) noexcept
+void CFdSetPrivate::AddFd(int fd, CFdSet::Callback cb)
 {
-   m_fds.push_back(fd);
+   if (m_eventData.size() >= m_maxEvents)
+   {
+        throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::", __func__, " max_events reached "));
+   }
+   m_eventData.emplace_back(event_data{.fd = fd, .cb = cb});
+   
+   epoll_event epev = {0};
+   epev.events = EPOLLIN;
+   epev.data.ptr = &m_eventData.back();
+
+   if(epoll_ctl(m_epollFd, EPOLL_CTL_ADD, fd, &epev) == -1)
+   {
+      throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to add fd to epoll: ", strerror(errno)));
+   }
 }
 
-CFdSetRetval CFdSet::Select(Callback cb)
+CFdSetRetval CFdSetPrivate::Select()
 {
-   int maxFd{0};
-   fd_set fdSet;
-   FD_ZERO(&fdSet);
+   int ret;
+   epoll_event epev[5] = {0};
+   CFdSetRetval ERet = CFdSetRetval::OK;
 
-   auto setFd = [&maxFd, &fdSet] (int fd ) 
-   {
-      maxFd = std::max(maxFd, fd);
-      FD_SET(fd, &fdSet);
-   };
-
-   setFd(m_unBlockFd[1]);
-
-   for(auto& fd : m_fds)
-   {
-      setFd(fd);
-   }
-   
-   const int ret = select(maxFd+1, &fdSet, NULL, NULL, NULL);
-   switch (ret)
-   {
-      case  0:
+   do {
+	   ret = epoll_wait(m_epollFd, &epev[0], 5, -1);
+		if ((ret == -1) && (errno != EINTR))
       {
-         std::stringstream ss;
-         ss << "Timeout occured: " << strerror(errno);
-         throw std::runtime_error(ss.str());
+         throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to epoll_wait: ", strerror(errno)));   
       }
-      case -1:
-      {
-         std::stringstream ss;
-         ss << "Select failed with error: " << strerror(errno);
-         throw std::runtime_error(ss.str());
-      }
-      default: 
-      {
-         break;
-      }
-   }
 
-   if(FD_ISSET(m_unBlockFd[1],&fdSet))
-   {
-      return CFdSetRetval::UNBLOCK;
-   }
-
-   for(auto& fd : m_fds)
-   {
-      if(FD_ISSET(fd,&fdSet))
+      for(int i = 0; i < ret; i++) 
       {
-         cb(fd);
-         CFdSetRetval::OK;
+         event_data *pEventData = static_cast<event_data*>(epev[i].data.ptr);
+         if(pEventData->fd == m_unBlockFd[1]) {
+            ERet = CFdSetRetval::UNBLOCK;
+         }
+         else {
+            pEventData->cb(pEventData->fd);   
+         }
       }
+	} while ((ret == -1) && (errno == EINTR));
+
+   return ERet;
+}
+
+void CFdSetPrivate::UnBlock()
+{
+   int dummy = 1;
+   if(write(m_unBlockFd[0],&dummy, sizeof(dummy)) == -1)
+   {
+      throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to write to unblock pipe: ", strerror(errno)));
    }
+}
+
+//*****************************************************************************
+// Method definitions "CFdSet"
+CFdSet::CFdSet(unsigned int maxEvents) :
+   m_pPrivate(utils::make_unique_opaque<CFdSetPrivate>(maxEvents))
+{ }
+
+CFdSet::~CFdSet()
+{ }
+
+void CFdSet::AddFd(int fd, Callback cb)
+{
+   m_pPrivate->AddFd(fd, cb);
+}
+
+CFdSetRetval CFdSet::Select()
+{
+   return m_pPrivate->Select();
 }
 
 void CFdSet::UnBlock()
 {
-   int dummy = 1;
-
-   if(write(m_unBlockFd[0],&dummy, sizeof(dummy)) == -1)
-   {
-      std::stringstream ss;
-      ss << "Failed to write to unblock pipe: " << strerror(errno);
-      throw std::runtime_error(ss.str());
-   }
+   m_pPrivate->UnBlock();
 }

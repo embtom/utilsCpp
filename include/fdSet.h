@@ -28,37 +28,44 @@
 
 #include <vector> // std::vector
 #include <functional> //std::function
+#include <unique_opaque.h>
 
 namespace utils
 {
 
+constexpr unsigned int max_events = 32;
+
+
+class CFdSetPrivate;
+
 //*****************************************************************************
 //! \brief CFdSet
 //!
-
 enum class CFdSetRetval
 {
    OK,
    UNBLOCK
 };
 
+
 class CFdSet
 {
 public:
+   using Callback = std::function<void(int fd)>;
+   
    CFdSet(const CFdSet&)            = delete;
    CFdSet& operator=(const CFdSet&) = delete;
-   
-   explicit CFdSet();
-   ~CFdSet();
-   
-   using Callback = std::function<void(int fd)>;
-   void AddFd(int fd) noexcept;
-   CFdSetRetval Select(Callback cb);
-   void UnBlock();
+   CFdSet(CFdSet&&)                 = default;  
+   CFdSet& operator=(CFdSet&&)      = default;
 
+   explicit CFdSet(unsigned int maxEvents = max_events);
+   virtual ~CFdSet();
+   
+   void AddFd(int fd, Callback cb);
+   CFdSetRetval Select();
+   void UnBlock();
 private:
-   std::vector<int> m_fds;
-   int              m_unBlockFd[2];
+   utils::unique_opaque<CFdSetPrivate>  m_pPrivate;
 };
 
 } //util

@@ -35,9 +35,16 @@ namespace utils
 
 template<typename T>
 using unique_opaque = std::unique_ptr<T, opaque_deleter<T>>;
+
+template<typename T, typename... Args>
+utils::unique_opaque<T> make_unique_opaque(Args&&... args) 
+{
+  return utils::unique_opaque<T>( new T(std::forward<Args>(args)...) );}
 }
 
 /// Call at top level in a C++ file to enable type %T to be used in an %unique_opaque<T>
 #define CZU_DEFINE_OPAQUE_DELETER(T) namespace utils { void opaque_deleter_hook(T *it) { delete it; } }
+
+
 
 #endif
