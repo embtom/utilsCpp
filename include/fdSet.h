@@ -62,6 +62,7 @@ public:
    virtual ~CFdSet();
    
    void AddFd(int fd, Callback cb);
+   void RemoveFd(int fd);
    CFdSetRetval Select();
    void UnBlock();
 private:

@@ -1,2 +1,3 @@
 add_subdirectory(TST_EnumReflect)
+add_subdirectory(TST_FdSet)
 add_subdirectory(TST_MakeVector)

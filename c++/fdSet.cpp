@@ -50,9 +50,10 @@ class CFdSetPrivate
 {
 
 public:
-   CFdSetPrivate(unsigned int maxEvents);
+   explicit CFdSetPrivate(unsigned int maxEvents);
    ~CFdSetPrivate();
    void AddFd(int fd, CFdSet::Callback cb);
+   void RemoveFd(int fd);
    CFdSetRetval Select();
    void UnBlock();
 
@@ -60,7 +61,7 @@ private:
    const int               m_maxEvents;
    std::vector<event_data> m_eventData;
    int                     m_epollFd {0};
-   int                     m_unBlockFd[2];
+   int                     m_unBlockFd[2] {0};
 };
 } //utils
 
@@ -71,7 +72,7 @@ CZU_DEFINE_OPAQUE_DELETER(CFdSetPrivate)
 // Method definitions "CFdSetPrivate"
 
 CFdSetPrivate::CFdSetPrivate(unsigned int maxEvents) :
-   m_maxEvents(m_maxEvents)
+   m_maxEvents(maxEvents + 1)
 {
    if(pipe(m_unBlockFd) == -1)
    {
@@ -86,9 +87,9 @@ CFdSetPrivate::CFdSetPrivate(unsigned int maxEvents) :
       throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::", __func__, " Failed to open epoll with error: ", strerror(errno)));
    }
    m_epollFd = ret;
-   m_eventData.reserve(maxEvents);
+   m_eventData.reserve(m_maxEvents);
 
-   AddFd(m_unBlockFd[1], nullptr);
+   AddFd(m_unBlockFd[0], nullptr);
 }
 
 CFdSetPrivate::~CFdSetPrivate()
@@ -101,7 +102,8 @@ CFdSetPrivate::~CFdSetPrivate()
 
 void CFdSetPrivate::AddFd(int fd, CFdSet::Callback cb)
 {
-   if (m_eventData.size() >= m_maxEvents)
+   int size = m_eventData.size();
+   if (size >= m_maxEvents)
    {
         throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::", __func__, " max_events reached "));
    }
@@ -115,6 +117,30 @@ void CFdSetPrivate::AddFd(int fd, CFdSet::Callback cb)
    {
       throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to add fd to epoll: ", strerror(errno)));
    }
+}
+
+void CFdSetPrivate::RemoveFd(int fd)
+{
+   auto it = std::find_if(m_eventData.begin(), m_eventData.end(), [&fd] (event_data& elm) 
+   {
+      if(elm.fd == fd) {
+         return true;
+      }
+      else {
+         return false;
+      }
+   });
+
+   if (it == m_eventData.end()) {
+      throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Fd to remove not available"));
+   }
+
+   if(epoll_ctl(m_epollFd, EPOLL_CTL_DEL, fd, NULL) == -1)
+   {
+      throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to remove fd to epoll: ", strerror(errno)));
+   }
+
+   m_eventData.erase(it);
 }
 
 CFdSetRetval CFdSetPrivate::Select()
@@ -133,7 +159,7 @@ CFdSetRetval CFdSetPrivate::Select()
       for(int i = 0; i < ret; i++) 
       {
          event_data *pEventData = static_cast<event_data*>(epev[i].data.ptr);
-         if(pEventData->fd == m_unBlockFd[1]) {
+         if(pEventData->fd == m_unBlockFd[0]) {
             ERet = CFdSetRetval::UNBLOCK;
          }
          else {
@@ -148,7 +174,7 @@ CFdSetRetval CFdSetPrivate::Select()
 void CFdSetPrivate::UnBlock()
 {
    int dummy = 1;
-   if(write(m_unBlockFd[0],&dummy, sizeof(dummy)) == -1)
+   if(write(m_unBlockFd[1],&dummy, sizeof(dummy)) == -1)
    {
       throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to write to unblock pipe: ", strerror(errno)));
    }
@@ -165,7 +191,15 @@ CFdSet::~CFdSet()
 
 void CFdSet::AddFd(int fd, Callback cb)
 {
+   if (!cb) {
+      throw std::runtime_error(utils::buildErrorMessage("CFdSet::",__func__," No callback passed "));
+   }
    m_pPrivate->AddFd(fd, cb);
+}
+
+void CFdSet::RemoveFd(int fd)
+{
+   m_pPrivate->RemoveFd(fd);
 }
 
 CFdSetRetval CFdSet::Select()
