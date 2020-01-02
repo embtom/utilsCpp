@@ -1,14 +1,11 @@
 project(utilsCpp)
 cmake_minimum_required(VERSION 3.10)
 
+option (UTILSCPP_BUILD_TEST "Build tests of utilsCpp" ${UTILSCPP_BUILD_TEST})
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_DEBUG_POSTFIX _g)
 set(CMAKE_CXX_EXTENSIONS yes)
-
-#######################################################################################
-#Subdirectoris 
-#######################################################################################
-add_subdirectory(test)
 
 #######################################################################################
 #Build Settings 
@@ -34,3 +31,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS}
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
+
+#######################################################################################
+#Subdirectoris 
+#######################################################################################
+if (${UTILSCPP_BUILD_TEST})
+    message(STATUS "Enabled utilsCpp Tests")
+    add_subdirectory(test)
+endif()
