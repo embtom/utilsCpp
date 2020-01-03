@@ -24,8 +24,7 @@ TEST(EnumReflect, value)
 class CFdSetTest : public ::testing::Test {
 protected:
     CFdSetTest() :
-        m_threadRunning(false),
-        m_fdSet(3)
+        m_threadRunning(false)
     {  }
     ~CFdSetTest() override
     {
@@ -178,8 +177,6 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
     }
     EXPECT_EQ(status, std::cv_status::no_timeout);
     
-    EXPECT_ANY_THROW(m_fdSet.AddFd(99, [](int fd){;}));
-
     m_fdSet.UnBlock();
 }
 

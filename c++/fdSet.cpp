@@ -26,14 +26,14 @@
 //******************************************************************************
 // Header
 
-#include "fdSet.h"
+#include <fdSet.h>
 #include <sstream> //std::stringstream
 #include <string.h> //strerror
 #include <errno.h> //errno
 #include <unistd.h> //write, close
 #include <sys/epoll.h> //epoll
 #include <error_msg.hpp> //buildErrorMessage
-
+#include <list>
 
 namespace utils
 {
@@ -50,7 +50,7 @@ class CFdSetPrivate
 {
 
 public:
-   explicit CFdSetPrivate(unsigned int maxEvents);
+   explicit CFdSetPrivate();
    ~CFdSetPrivate();
    void AddFd(int fd, CFdSet::Callback cb);
    void RemoveFd(int fd);
@@ -58,8 +58,7 @@ public:
    void UnBlock();
 
 private:
-   const int               m_maxEvents;
-   std::vector<event_data> m_eventData;
+   std::list<event_data>   m_eventData;
    int                     m_epollFd {0};
    int                     m_unBlockFd[2] {0};
 };
@@ -71,8 +70,7 @@ CZU_DEFINE_OPAQUE_DELETER(CFdSetPrivate)
 //*****************************************************************************
 // Method definitions "CFdSetPrivate"
 
-CFdSetPrivate::CFdSetPrivate(unsigned int maxEvents) :
-   m_maxEvents(maxEvents + 1)
+CFdSetPrivate::CFdSetPrivate()
 {
    if(pipe(m_unBlockFd) == -1)
    {
@@ -87,8 +85,6 @@ CFdSetPrivate::CFdSetPrivate(unsigned int maxEvents) :
       throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::", __func__, " Failed to open epoll with error: ", strerror(errno)));
    }
    m_epollFd = ret;
-   m_eventData.reserve(m_maxEvents);
-
    AddFd(m_unBlockFd[0], nullptr);
 }
 
@@ -102,11 +98,6 @@ CFdSetPrivate::~CFdSetPrivate()
 
 void CFdSetPrivate::AddFd(int fd, CFdSet::Callback cb)
 {
-   int size = m_eventData.size();
-   if (size >= m_maxEvents)
-   {
-        throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::", __func__, " max_events reached "));
-   }
    m_eventData.emplace_back(event_data{.fd = fd, .cb = cb});
    
    epoll_event epev = {0};
@@ -182,8 +173,8 @@ void CFdSetPrivate::UnBlock()
 
 //*****************************************************************************
 // Method definitions "CFdSet"
-CFdSet::CFdSet(unsigned int maxEvents) :
-   m_pPrivate(utils::make_unique_opaque<CFdSetPrivate>(maxEvents))
+CFdSet::CFdSet() :
+   m_pPrivate(utils::make_unique_opaque<CFdSetPrivate>())
 { }
 
 CFdSet::~CFdSet()

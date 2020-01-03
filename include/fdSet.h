@@ -33,9 +33,6 @@
 namespace utils
 {
 
-constexpr unsigned int max_events = 32;
-
-
 class CFdSetPrivate;
 
 //*****************************************************************************
@@ -58,7 +55,7 @@ public:
    CFdSet(CFdSet&&)                 = default;  
    CFdSet& operator=(CFdSet&&)      = default;
 
-   explicit CFdSet(unsigned int maxEvents = max_events);
+   explicit CFdSet();
    virtual ~CFdSet();
    
    void AddFd(int fd, Callback cb);
