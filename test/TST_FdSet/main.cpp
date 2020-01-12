@@ -49,13 +49,13 @@ protected:
     {
         while (m_threadRunning) 
         {
-            std::cout << COUT_GTEST_MGT << "Start of the testWorker" << std::endl;
+            std::cout << GTEST_BOX << "Start of the testWorker" << std::endl;
             m_SelectRet = m_fdSet.Select();
             if (m_SelectRet == utils::CFdSetRetval::UNBLOCK) {
                 m_threadRunning = false;
             }
         }
-        std::cout << COUT_GTEST_MGT << "End of the testWorker" << std::endl;
+        std::cout << GTEST_BOX << "End of the testWorker" << std::endl;
     
     }
 
@@ -85,7 +85,7 @@ TEST_F(CFdSetTest, CheckFdHandling)
         read(testFd[0],&readDummy,sizeof(readDummy));
         EXPECT_EQ(senddummy, readDummy);
         EXPECT_EQ(testFd[0], fd);
-        std::cout << COUT_GTEST_MGT << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
+        std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
     });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -118,7 +118,7 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
         read(testFd1[0],&readDummy,sizeof(readDummy));
         EXPECT_EQ(senddummy1, readDummy);
         EXPECT_EQ(testFd1[0], fd);
-        std::cout << COUT_GTEST_MGT << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
+        std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
         std::unique_lock<std::mutex> lock(m);
         fdSetCount++;
         if (fdSetCount == 3) {
@@ -135,7 +135,7 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
         read(testFd2[0],&readDummy,sizeof(readDummy));
         EXPECT_EQ(senddummy2, readDummy);
         EXPECT_EQ(testFd2[0], fd);
-        std::cout << COUT_GTEST_MGT << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
+        std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
         std::unique_lock<std::mutex> lock(m);
         fdSetCount++;
         if (fdSetCount == 3) {
@@ -152,7 +152,7 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
         read(testFd3[0],&readDummy,sizeof(readDummy));
         EXPECT_EQ(senddummy3, readDummy);
         EXPECT_EQ(testFd3[0], fd);
-        std::cout << COUT_GTEST_MGT << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
+        std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
         std::unique_lock<std::mutex> lock(m);
         fdSetCount++;
         if (fdSetCount == 3) {
