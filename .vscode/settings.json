@@ -1,0 +1,10 @@
+{  
+    "window.zoomLevel": 0.5,
+    "editor.fontSize": 12,   
+    "cmake.buildDirectory": "${workspaceRoot}/build/${buildKit}_${buildType}",
+    //"cmake.generator": "Unix Makefiles",
+    "cmake.configureArgs": [
+        "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
+        "-DUTILSCPP_BUILD_TEST=ON"
+    ]
+}

@@ -1,4 +1,6 @@
-project(TST_EnumReflect)
+project(TST_FdSet)
+
+find_library(ATOMIC NAMES atomic libatomic.so.1)
 
 ######################################################
 #Build Sources
@@ -13,5 +15,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS}
 )
 target_link_libraries(${PROJECT_NAME}  utilsCpp
+                                       ${ATOMIC}
                                        GTest::GTest 
                                        GTest::Main)
+
+add_test(NAME TST_FdSet COMMAND TST_FdSet)                                       

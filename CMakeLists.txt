@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS yes)
 
 ######################################################
 #Build Options
-option (UTILSCPP_BUILD_TEST "Build tests of utilsCpp" ${UTILSCPP_BUILD_TEST})
+option (UTILSCPP_BUILD_TEST "Build tests of utilsCpp" ON)
 
 ######################################################
 #Build Sources and headers
@@ -41,8 +41,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC "include")
 
 ######################################################
 #Subdirectoris 
-if (${UTILSCPP_BUILD_TEST}) 
-    message(STATUS "Enabled utilsCpp Tests")
+
+include(CTest)
+if (${BUILD_TESTING} AND ${UTILSCPP_BUILD_TEST})
     find_package(GTest REQUIRED)
-    add_subdirectory(test)
+    message(STATUS "Build with utilsCpp Unit Tests")
+    enable_testing()
+    add_subdirectory(tests)
 endif()
+
