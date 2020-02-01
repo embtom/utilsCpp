@@ -58,7 +58,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 ######################################################
 #Install rules
-install(TARGETS ${PROJECT_NAME} EXPORT utilsCpp-config
+install(TARGETS ${PROJECT_NAME} EXPORT utilscpp-config
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/embtom/${PROJECT_NAME}"
 )
@@ -67,7 +67,7 @@ install(FILES ${UTILSCPP_HEADER}
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/embtom/${PROJECT_NAME}"
 )
 
-install(EXPORT utilsCpp-config
+install(EXPORT utilscpp-config
     NAMESPACE
         EMBTOM::
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
