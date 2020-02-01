@@ -1,0 +1,24 @@
+Source: utilscpp
+Section: libs
+Priority: optional
+Maintainer: Thomas Willetal <t.willetal@gmail.com>
+Build-Depends: cmake, debhelper (>= 11), gcc (>= 7.4),
+               libgtest-dev
+Standards-Version: 4.3.0
+
+Package: utilscpp-dev
+Architecture: any
+Section: libdevel
+Depends: ${misc:Depends}
+Description: Development headers of the embtom
+             utilscpp [development]
+
+Package: utilscpp-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends:
+    utilscpp-dev (= ${binary:Version}),
+    ${misc:Depends}
+Description: debugging symbols for utilscpp
+
