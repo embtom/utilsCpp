@@ -1,0 +1,61 @@
+stages:
+  - build
+  - deploy
+  - enable_merge
+  - enable_merge_testing
+
+build_job:
+  stage: build
+  tags: 
+    - tomhp
+  script:
+    - ./debBuild.sh
+  artifacts:
+    paths:
+      - ./build_deb/  
+    expire_in: 4 week
+  only:
+    - master
+
+deploy_job:
+  stage: deploy
+  tags: 
+    - tomhp
+  script:
+    - cd ./build_deb
+    - cp * /media/volume1/ci_projects/snapshot/utilsCpp
+    - reprepro -b /media/volume1/reprepo/ -A amd64 remove bionic utilscpp-dev
+    - reprepro -b /media/volume1/reprepo/ -A amd64 remove bionic utilscpp-dbg
+    - reprepro -b /media/volume1/reprepo/ -A source remove bionic utilscpp
+    - reprepro --ignore=wrongdistribution -b /media/volume1/reprepo/ -V include bionic utilscpp*_amd64.changes
+  when: on_success
+  only:
+    - master
+
+enable_merge:
+  stage: enable_merge    
+  tags: 
+    - tomhp
+  script:
+    - mkdir -p build_merge
+    - cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DUTILSCPP_BUILD_TEST=ON -G"Ninja" -H. -Bbuild_merge
+    - cmake --build ./build_merge
+  artifacts:
+    paths:
+      - ./build_merge/  
+    expire_in: 1 days
+  only: 
+    - merge_requests
+
+enable_merge_testing:
+    stage: enable_merge_testing
+    dependencies:
+      - enable_merge
+    tags:
+      - tomhp
+    script:
+      - cd ./build_merge
+      - ctest -T test --output-on-failure
+    only: 
+      - merge_requests
+    

@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
+
 project(utilsCpp)
+include(GNUInstallDirs)
+######################################################
+#Library Version
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
+
 
 ######################################################
 #Build Config
@@ -9,7 +17,7 @@ set(CMAKE_CXX_EXTENSIONS yes)
 
 ######################################################
 #Build Options
-option (UTILSCPP_BUILD_TEST "Build tests of utilsCpp" ${UTILSCPP_BUILD_TEST})
+option (UTILSCPP_BUILD_TEST "Build tests of utilsCpp" ON)
 
 ######################################################
 #Build Sources and headers
@@ -25,6 +33,7 @@ set(UTILSCPP_HEADER
     "include/make_unordered_map.h"
     "include/make_vector.hpp"
     "include/map_container.hpp"
+    "include/span.h"
     "include/unique_opaque.h"
 )
 
@@ -37,12 +46,42 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS}
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC "include")
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/embtom/${PROJECT_NAME}>
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+    SOVERSION ${VERSION_MAJOR}
+)
+
+######################################################
+#Install rules
+install(TARGETS ${PROJECT_NAME} EXPORT utilsCpp-config
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/embtom/${PROJECT_NAME}"
+)
+
+install(FILES ${UTILSCPP_HEADER}
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/embtom/${PROJECT_NAME}"
+)
+
+install(EXPORT utilsCpp-config
+    NAMESPACE
+        EMBTOM::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+)
+
 
 ######################################################
 #Subdirectoris 
-if (${UTILSCPP_BUILD_TEST}) 
-    message(STATUS "Enabled utilsCpp Tests")
+
+include(CTest)
+if (${BUILD_TESTING} AND ${UTILSCPP_BUILD_TEST})
     find_package(GTest REQUIRED)
-    add_subdirectory(test)
+    message(STATUS "Build with utilsCpp Unit Tests")
+    enable_testing()
+    add_subdirectory(tests)
 endif()
+

@@ -1,4 +1,4 @@
-project(TST_MakeVector)
+project(TST_EnumReflect)
 
 ######################################################
 #Build Sources
@@ -12,7 +12,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD   ${CMAKE_CXX_STANDARD}
     CXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS}
 )
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME}  utilsCpp
                                        GTest::GTest 
                                        GTest::Main)
+
+add_test(NAME TST_EnumReflect COMMAND TST_EnumReflect)
