@@ -23,7 +23,7 @@
       by `czu::unique_opaque<T>`
 */
 
-namespace utils 
+namespace utils
 {
   template<typename T>
   struct opaque_deleter {
@@ -37,7 +37,7 @@ template<typename T>
 using unique_opaque = std::unique_ptr<T, opaque_deleter<T>>;
 
 template<typename T, typename... Args>
-utils::unique_opaque<T> make_unique_opaque(Args&&... args) 
+utils::unique_opaque<T> make_unique_opaque(Args&&... args)
 {
   return utils::unique_opaque<T>( new T(std::forward<Args>(args)...) );}
 }

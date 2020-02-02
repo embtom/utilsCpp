@@ -14,28 +14,28 @@ static struct lastInstCounter s_lastCounter;
 template <typename T>
 struct instance_counter {
 
-    instance_counter() noexcept 
+    instance_counter() noexcept
     { ++icounter.num_construct; }
-    
-    instance_counter(const instance_counter&) noexcept 
+
+    instance_counter(const instance_counter&) noexcept
     { ++icounter.num_copy; }
-    
-    instance_counter(instance_counter&&) noexcept 
+
+    instance_counter(instance_counter&&) noexcept
     { ++icounter.num_move; }
     // Simulate both copy-assign and move-assign
     instance_counter& operator=(instance_counter) noexcept
     { return *this; }
 
-    ~instance_counter() 
-    { 
-        icounter.num_destruct++; 
+    ~instance_counter()
+    {
+        icounter.num_destruct++;
         s_lastCounter.num_construct = icounter.num_construct;
         s_lastCounter.num_copy = icounter.num_copy;
         s_lastCounter.num_move = icounter.num_move;
         s_lastCounter.num_destruct = icounter.num_destruct;
     }
 
-    static void clear() 
+    static void clear()
     {
         icounter.num_construct = 0;
         icounter.num_copy = 0;
@@ -45,7 +45,7 @@ struct instance_counter {
 
 
 private:
-    static struct counter 
+    static struct counter
     {
         int num_construct = 0;
         int num_copy = 0;
@@ -60,7 +60,7 @@ private:
             s_lastCounter.num_destruct = num_destruct;
 
             std::cout << num_construct << " direct constructions" << std::endl;
-            std::cout << num_copy << " copies" << std::endl; 
+            std::cout << num_copy << " copies" << std::endl;
             std::cout << num_move << " moves" << std::endl;
             const int total_construct = num_construct + num_copy + num_move;
             std::cout << total_construct << " total constructions" << std::endl;

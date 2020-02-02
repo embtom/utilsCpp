@@ -9,7 +9,7 @@
 
 namespace utils
 {
-    
+
 template<typename... Args>
 int print(std::ostream& s, Args&... args)
 {

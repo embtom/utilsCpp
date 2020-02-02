@@ -30,7 +30,7 @@ TEST(EnumReflect, toString)
 
     a = EnumTest::val2;
     EXPECT_EQ(EnumToString(a), "val2");
-    
+
     a = EnumTest::val3;
     EXPECT_EQ(EnumToString(a), "val3");
 
@@ -46,10 +46,10 @@ TEST(EnumReflect, toString)
 
 class StdoutEnumReflect : public ::testing::Test {
 protected:
-    StdoutEnumReflect() 
+    StdoutEnumReflect()
     { }
     ~StdoutEnumReflect() override = default;
-    void SetUp() override 
+    void SetUp() override
     {
         sbuf = std::cout.rdbuf();
         // Redirect cout to our stringstream buffer or any other ostream
@@ -68,7 +68,7 @@ protected:
     std::streambuf *sbuf {nullptr};
 };
 
-TEST_F(StdoutEnumReflect, StackOverflowTest) 
+TEST_F(StdoutEnumReflect, StackOverflowTest)
 {
     EnumTest a = EnumTest::val1;
     {

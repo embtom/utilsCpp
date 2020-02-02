@@ -10,7 +10,7 @@
 #define ANSI_TXT_MGT                "\033[0;35m" //Magenta
 #define ANSI_TXT_DFT                "\033[0;0m" //Console default
 #define GTEST_BOX                   "[     cout ] "
-#define COUT_GTEST                  ANSI_TXT_GRN << GTEST_BOX  
+#define COUT_GTEST                  ANSI_TXT_GRN << GTEST_BOX
 #define COUT_GTEST_MGT              COUT_GTEST << ANSI_TXT_DFT
 
 
@@ -19,7 +19,7 @@ TEST(EnumReflect, value)
     utils::CFdSet fdSet;
 
     fdSet.UnBlock();
-} 
+}
 
 class CFdSetTest : public ::testing::Test {
 protected:
@@ -32,22 +32,22 @@ protected:
 
     }
     // Called in front of each unit test
-    void SetUp() override 
-    {   
+    void SetUp() override
+    {
         m_threadRunning = true;
         m_testThd = std::thread(&CFdSetTest::testWorker,this);
     }
     // Called after each unit test
-    void TearDown() override 
+    void TearDown() override
     {
         if(m_testThd.joinable()) {
             m_testThd.join();
-        }        
+        }
     }
 
     void testWorker()
     {
-        while (m_threadRunning) 
+        while (m_threadRunning)
         {
             std::cout << GTEST_BOX << "Start of the testWorker" << std::endl;
             m_SelectRet = m_fdSet.Select();
@@ -56,14 +56,14 @@ protected:
             }
         }
         std::cout << GTEST_BOX << "End of the testWorker" << std::endl;
-    
+
     }
 
     std::thread m_testThd;
     std::atomic<bool> m_threadRunning;
     utils::CFdSet m_fdSet;
     utils::CFdSetRetval m_SelectRet;
-    
+
 };
 
 TEST_F(CFdSetTest, CheckUnblock)
@@ -82,14 +82,14 @@ TEST_F(CFdSetTest, CheckFdHandling)
     m_fdSet.AddFd(testFd[0],[&testFd, &senddummy](int fd)
     {
         int readDummy = 0;
-        read(testFd[0],&readDummy,sizeof(readDummy));
+        EXPECT_GE(read(testFd[0],&readDummy,sizeof(readDummy)),0);
         EXPECT_EQ(senddummy, readDummy);
         EXPECT_EQ(testFd[0], fd);
         std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
     });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  
+
     ASSERT_EQ(write(testFd[1],&senddummy, sizeof(senddummy)), sizeof(senddummy));
 
 
@@ -115,7 +115,7 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
     m_fdSet.AddFd(testFd1[0],[&testFd1, &senddummy1, &fdSetCount, &m, &cond_var](int fd)
     {
         int readDummy = 0;
-        read(testFd1[0],&readDummy,sizeof(readDummy));
+        EXPECT_GE(read(testFd1[0],&readDummy,sizeof(readDummy)),0);
         EXPECT_EQ(senddummy1, readDummy);
         EXPECT_EQ(testFd1[0], fd);
         std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
@@ -132,7 +132,7 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
     m_fdSet.AddFd(testFd2[0],[&testFd2, &senddummy2, &fdSetCount, &m, &cond_var](int fd)
     {
         int readDummy = 0;
-        read(testFd2[0],&readDummy,sizeof(readDummy));
+        EXPECT_GE(read(testFd2[0],&readDummy,sizeof(readDummy)),0);
         EXPECT_EQ(senddummy2, readDummy);
         EXPECT_EQ(testFd2[0], fd);
         std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
@@ -149,7 +149,7 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
     m_fdSet.AddFd(testFd3[0],[&testFd3, &senddummy3, &fdSetCount, &m, &cond_var](int fd)
     {
         int readDummy = 0;
-        read(testFd3[0],&readDummy,sizeof(readDummy));
+        EXPECT_GE(read(testFd3[0],&readDummy,sizeof(readDummy)),0);
         EXPECT_EQ(senddummy3, readDummy);
         EXPECT_EQ(testFd3[0], fd);
         std::cout << GTEST_BOX << "Unblock by Fd " << fd << " with " << readDummy << std::endl;
@@ -165,10 +165,10 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
     ASSERT_EQ(write(testFd3[1],&senddummy3, sizeof(senddummy3)), sizeof(senddummy3));
 
     std::cv_status status = std::cv_status::no_timeout;
-    
+
     {
         std::unique_lock<std::mutex> lock(m);
-        do   
+        do
         {
             if (fdSetCount == 3)
                 break;
@@ -176,7 +176,7 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
         } while((fdSetCount == 3) || (status != std::cv_status::timeout));
     }
     EXPECT_EQ(status, std::cv_status::no_timeout);
-    
+
     m_fdSet.UnBlock();
 }
 

@@ -11,10 +11,10 @@
 TEST(makeFunctions, makeVector)
 {
     auto vec = utils::make_vector<counted<std::string>>("foo", "bar", "baz");
- 
-    auto contentCheck = [&vec] (const std::string& toCheck) 
+
+    auto contentCheck = [&vec] (const std::string& toCheck)
     {
-        auto it = std::find_if(vec.begin(),vec.end(), [&toCheck] (const auto& elm ) 
+        auto it = std::find_if(vec.begin(),vec.end(), [&toCheck] (const auto& elm )
         {
             if (elm.compare(toCheck) == 0) {
                 return true;
@@ -27,7 +27,7 @@ TEST(makeFunctions, makeVector)
 
     contentCheck(std::string("foo"));
     contentCheck(std::string("bar"));
-    contentCheck(std::string("baz"));    
+    contentCheck(std::string("baz"));
     vec.clear();
 
     EXPECT_EQ(s_lastCounter.num_construct, 3);
@@ -44,10 +44,10 @@ class elementBox
 {
 public:
     elementBox(elements elem) :
-        m_element(elem)    
+        m_element(elem)
     { }
 private:
-   elements m_element; 
+   elements m_element;
 };
 
 

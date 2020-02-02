@@ -1,4 +1,4 @@
-project(TST_FdSet)
+project(TST_Span)
 
 find_library(ATOMIC NAMES atomic libatomic.so.1)
 
@@ -19,4 +19,4 @@ target_link_libraries(${PROJECT_NAME}  utilsCpp
                                        GTest::GTest
                                        GTest::Main)
 
-add_test(NAME TST_FdSet COMMAND TST_FdSet)
+add_test(NAME TST_Span COMMAND TST_Span)

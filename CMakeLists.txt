@@ -1,13 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(utilsCpp)
+project(utilsCpp
+    LANGUAGES CXX
+    VERSION 1.0.0)
 include(GNUInstallDirs)
-######################################################
-#Library Version
-set(VERSION_MAJOR 1)
-set(VERSION_MINOR 0)
-set(VERSION_PATCH 0)
-
 
 ######################################################
 #Build Config
@@ -21,11 +17,11 @@ option (UTILSCPP_BUILD_TEST "Build tests of utilsCpp" ON)
 
 ######################################################
 #Build Sources and headers
-set(UTILSCPP_SOURCE 
+set(UTILSCPP_SOURCE
     "c++/fdSet.cpp"
 )
 
-set(UTILSCPP_HEADER 
+set(UTILSCPP_HEADER
     "include/enum_reflect.hpp"
     "include/error_msg.hpp"
     "include/fdSet.h"
@@ -40,7 +36,7 @@ set(UTILSCPP_HEADER
 ######################################################
 #Build target
 add_library(${PROJECT_NAME} STATIC ${UTILSCPP_SOURCE} ${UTILSCPP_HEADER})
-set_target_properties(${PROJECT_NAME} PROPERTIES 
+set_target_properties(${PROJECT_NAME} PROPERTIES
     DEBUG_POSTFIX  ${CMAKE_DEBUG_POSTFIX}
     CXX_STANDARD   ${CMAKE_CXX_STANDARD}
     CXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS}
@@ -52,8 +48,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
-    SOVERSION ${VERSION_MAJOR}
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
 ######################################################
@@ -75,7 +71,7 @@ install(EXPORT utilscpp-config
 
 
 ######################################################
-#Subdirectoris 
+#Subdirectoris
 
 include(CTest)
 if (${BUILD_TESTING} AND ${UTILSCPP_BUILD_TEST})
