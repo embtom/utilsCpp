@@ -38,7 +38,7 @@ namespace utils {
           std::is_convertible<First, T>::value, all_constructible_and_convertible<T, Rest...>,
             std::false_type>::type {};
 
-    template <typename T, typename... Args, 
+    template <typename T, typename... Args,
               typename std::enable_if<!std::is_trivially_copyable<T>::value, int>::type = 0>
     std::vector<T> make_vector_impl(Args&&... args)
     {
@@ -49,7 +49,7 @@ namespace utils {
         return vec;
     }
 
-    template <typename T, typename... Args, 
+    template <typename T, typename... Args,
               typename std::enable_if<std::is_trivially_copyable<T>::value, int>::type = 0>
     std::vector<T> make_vector_impl(Args&&... args)
     {

@@ -1,6 +1,6 @@
 /*
  * This file is part of the EMBTOM project
- * Copyright (c) 2018-2019 Thomas Willetal 
+ * Copyright (c) 2018-2019 Thomas Willetal
  * (https://github.com/embtom)
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -31,7 +31,7 @@
 
 
 
-namespace utils 
+namespace utils
 {
     template<typename T>
     class CMapContainerBase
@@ -50,19 +50,19 @@ namespace utils
             constexpr CMapContainer() = default;
 
             template<typename ...Args>
-            constexpr CMapContainer(Args&&... args) noexcept : 
+            constexpr CMapContainer(Args&&... args) noexcept :
                 m_map({std::forward<Args>(args)...})
             { };
 
             constexpr size_t size() const noexcept override
-            { 
+            {
                 return (sizeof(T) * m_map.size());
             }
-            
+
             constexpr unsigned int count() const noexcept override
             {
                 return m_map.size();
-            }    
+            }
 
             constexpr T* data() const noexcept override
             {
@@ -74,7 +74,7 @@ namespace utils
             void foreach(Func f)
             {
                 std::for_each(m_map.begin(), m_map.end(), f);
-            }        
+            }
         private:
             std::array<T, N> m_map;
     };

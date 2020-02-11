@@ -1,6 +1,6 @@
 /*
  * This file is part of the EMBTOM project
- * Copyright (c) 2018-2019 Thomas Willetal 
+ * Copyright (c) 2018-2019 Thomas Willetal
  * (https://github.com/embtom)
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -37,7 +37,7 @@
 
 namespace utils
 {
-struct event_data 
+struct event_data
 {
    int fd;
    CFdSet::Callback cb;
@@ -99,7 +99,7 @@ CFdSetPrivate::~CFdSetPrivate()
 void CFdSetPrivate::AddFd(int fd, CFdSet::Callback cb)
 {
    m_eventData.emplace_back(event_data{.fd = fd, .cb = cb});
-   
+
    epoll_event epev = {0};
    epev.events = EPOLLIN;
    epev.data.ptr = &m_eventData.back();
@@ -112,7 +112,7 @@ void CFdSetPrivate::AddFd(int fd, CFdSet::Callback cb)
 
 void CFdSetPrivate::RemoveFd(int fd)
 {
-   auto it = std::find_if(m_eventData.begin(), m_eventData.end(), [&fd] (event_data& elm) 
+   auto it = std::find_if(m_eventData.begin(), m_eventData.end(), [&fd] (event_data& elm)
    {
       if(elm.fd == fd) {
          return true;
@@ -144,17 +144,17 @@ CFdSetRetval CFdSetPrivate::Select()
 	   ret = epoll_wait(m_epollFd, &epev[0], 5, -1);
 		if ((ret == -1) && (errno != EINTR))
       {
-         throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to epoll_wait: ", strerror(errno)));   
+         throw std::runtime_error(utils::buildErrorMessage("CFdSetPrivate::",__func__," Failed to epoll_wait: ", strerror(errno)));
       }
 
-      for(int i = 0; i < ret; i++) 
+      for(int i = 0; i < ret; i++)
       {
          event_data *pEventData = static_cast<event_data*>(epev[i].data.ptr);
          if(pEventData->fd == m_unBlockFd[0]) {
             ERet = CFdSetRetval::UNBLOCK;
          }
          else {
-            pEventData->cb(pEventData->fd);   
+            pEventData->cb(pEventData->fd);
          }
       }
 	} while ((ret == -1) && (errno == EINTR));

@@ -1,6 +1,6 @@
 /*
  * This file is part of the EMBTOM project
- * Copyright (c) 2018-2019 Thomas Willetal 
+ * Copyright (c) 2018-2019 Thomas Willetal
  * (https://github.com/embtom)
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -38,7 +38,7 @@ template<typename Enum, class Enable = void>
 class EnumReflectBase;
 
 template<typename Enum>
-class EnumReflectBase<Enum, typename std::enable_if_t<std::is_enum<Enum>::value>> 
+class EnumReflectBase<Enum, typename std::enable_if_t<std::is_enum<Enum>::value>>
 {
 public:
     static void reflect( const char* enumsInfo )
@@ -50,12 +50,12 @@ public:
         if ((enumsInfo == nullptr) || (*enumsInfo == 0)) {
             return;
         }
-        
+
         // Should be called once per each enumeration.
         std::string senumsInfo(enumsInfo);
         std::regex re("^([a-zA-Z_][a-zA-Z0-9_]+) *=? *([^,]*)(,|$) *");     // C++ identifier to optional " = <value>"
         std::smatch sm;
-        
+
         for (int value = 0; regex_search(senumsInfo, sm, re); senumsInfo = sm.suffix(), value++)
         {
             std::string enumName = sm[1].str();
@@ -63,7 +63,7 @@ public:
 
             if (enumValue.length() != 0) {
                 if(enumValue.compare(0,2,"0b") == 0) {
-                    value = std::stoi(enumValue.substr(2), nullptr, 2);    
+                    value = std::stoi(enumValue.substr(2), nullptr, 2);
                 }
                 else {
                     value = std::stoi(enumValue,nullptr,0);
@@ -109,7 +109,7 @@ template<typename Enum, std::enable_if_t<std::is_enum<Enum>::value, int> = 0>
 std::string EnumToString(Enum E)
 {
     EnumReflect<Enum>::reflect(EnumReflect<Enum>::getEnums());
-    
+
     std::string name;
     if( EnumReflect<Enum>::toString(E, name))
         return name;
@@ -138,7 +138,7 @@ constexpr size_t countLength(T ... args)
     class EnumReflect<name>: public EnumReflectBase<name> {             \
         public:                                                         \
             static const char* getEnums() { return #__VA_ARGS__; }      \
-    };                                                                  
+    };
 
 
 #endif /* _ENUM_REFLECT_H_ */
