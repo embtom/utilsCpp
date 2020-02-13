@@ -171,7 +171,7 @@ public:
    }
 
    template<size_t N = 1, std::size_t E = Extent,
-      std::enable_if_t<std::is_same_v<element_type,std::decay_t<ElementType>>,int> = 0 >
+      std::enable_if_t<std::is_same_v<std::remove_pointer_t<element_type>,ElementType>,int> = 0 >
    constexpr span(element_type &arr) noexcept :
       m_storage(&arr, N)
    { }

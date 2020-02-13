@@ -2,6 +2,7 @@
 #include <span.h>
 #include <vector>
 #include <algorithm>
+#include <string>
 #include "make_vector.hpp"
 
 
@@ -184,6 +185,20 @@ TEST(SpanTest, makeSpan)
         EXPECT_NE(spanObj3.data(), nullptr);
     }
 }
+
+TEST(SpanTest, std_String)
+{
+    const std::string testString("Hallo ein test");
+    utils::span<const char> stringSpan(testString);
+
+    EXPECT_EQ(testString.size(), stringSpan.size());
+    EXPECT_EQ(std::equal(stringSpan.begin(),stringSpan.end(),testString.begin()), true);
+
+    utils::span<const char> stringSpan2(testString.c_str(),testString.size());
+    EXPECT_EQ(testString.size(), stringSpan2.size());
+    EXPECT_EQ(std::equal(stringSpan2.begin(),stringSpan2.end(),testString.begin()), true);
+}
+
 
 int main(int argc, char **argv)
 {
