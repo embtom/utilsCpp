@@ -19,6 +19,7 @@ option (UTILSCPP_BUILD_TEST "Build tests of utilsCpp" ON)
 #Build Sources and headers
 set(UTILSCPP_SOURCE
     "c++/fdSet.cpp"
+    "c++/threadWorker.cpp"
 )
 
 set(UTILSCPP_HEADER
@@ -30,6 +31,8 @@ set(UTILSCPP_HEADER
     "include/make_vector.hpp"
     "include/map_container.hpp"
     "include/span.h"
+    "include/threadLoop.h"
+    "include/detail/threadWorker.h"
     "include/unique_opaque.h"
 )
 
@@ -44,6 +47,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/detail>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/embtom/${PROJECT_NAME}>
 )
 
