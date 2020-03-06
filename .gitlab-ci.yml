@@ -27,7 +27,7 @@ deploy_job:
     - reprepro -b /media/volume1/reprepo/ -A amd64 remove bionic utilscpp-dev
     - reprepro -b /media/volume1/reprepo/ -A amd64 remove bionic utilscpp-dbg
     - reprepro -b /media/volume1/reprepo/ -A source remove bionic utilscpp
-    - reprepro --ignore=wrongdistribution -b /media/volume1/reprepo/ -V include bionic utilscpp*_amd64.changes
+    - reprepro --ignore=wrongdistribution --ignore=missingfield -b /media/volume1/reprepo/ -V include bionic utilscpp*_amd64.changes
   when: on_success
   only:
     - master
