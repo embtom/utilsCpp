@@ -56,14 +56,16 @@ public:
    CFdSet& operator=(CFdSet&&)      = default;
 
    explicit CFdSet();
-   virtual ~CFdSet();
+   ~CFdSet();
 
    void AddFd(int fd, Callback cb);
+   void AddFd(int fd);
    void RemoveFd(int fd);
    CFdSetRetval Select();
+   CFdSetRetval Select(Callback cb);
    void UnBlock();
 private:
-   utils::unique_opaque<CFdSetPrivate>  m_pPrivate;
+   std::unique_ptr<CFdSetPrivate>   m_pPrivate;
 };
 
 } //util

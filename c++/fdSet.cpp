@@ -51,10 +51,10 @@ class CFdSetPrivate
 
 public:
    explicit CFdSetPrivate();
-   ~CFdSetPrivate();
+   ~CFdSetPrivate() noexcept;
    void AddFd(int fd, CFdSet::Callback cb);
    void RemoveFd(int fd);
-   CFdSetRetval Select();
+   CFdSetRetval Select(CFdSet::Callback cb);
    void UnBlock();
 
 private:
@@ -65,7 +65,6 @@ private:
 } //utils
 
 using namespace utils;
-CZU_DEFINE_OPAQUE_DELETER(CFdSetPrivate)
 
 //*****************************************************************************
 // Method definitions "CFdSetPrivate"
@@ -88,7 +87,7 @@ CFdSetPrivate::CFdSetPrivate()
    AddFd(m_unBlockFd[0], nullptr);
 }
 
-CFdSetPrivate::~CFdSetPrivate()
+CFdSetPrivate::~CFdSetPrivate() noexcept
 {
    UnBlock();
    close(m_epollFd);
@@ -134,7 +133,7 @@ void CFdSetPrivate::RemoveFd(int fd)
    m_eventData.erase(it);
 }
 
-CFdSetRetval CFdSetPrivate::Select()
+CFdSetRetval CFdSetPrivate::Select(CFdSet::Callback cb)
 {
    int ret;
    epoll_event epev[5] = {0};
@@ -152,8 +151,13 @@ CFdSetRetval CFdSetPrivate::Select()
          event_data *pEventData = static_cast<event_data*>(epev[i].data.ptr);
          if(pEventData->fd == m_unBlockFd[0]) {
             ERet = CFdSetRetval::UNBLOCK;
+            continue;
          }
-         else {
+
+         if(cb) {
+            cb(pEventData->fd);
+         }
+         if(pEventData->cb) {
             pEventData->cb(pEventData->fd);
          }
       }
@@ -174,11 +178,10 @@ void CFdSetPrivate::UnBlock()
 //*****************************************************************************
 // Method definitions "CFdSet"
 CFdSet::CFdSet() :
-   m_pPrivate(utils::make_unique_opaque<CFdSetPrivate>())
+   m_pPrivate(std::make_unique<CFdSetPrivate>())
 { }
 
-CFdSet::~CFdSet()
-{ }
+CFdSet::~CFdSet() = default;
 
 void CFdSet::AddFd(int fd, Callback cb)
 {
@@ -188,6 +191,12 @@ void CFdSet::AddFd(int fd, Callback cb)
    m_pPrivate->AddFd(fd, cb);
 }
 
+void CFdSet::AddFd(int fd)
+{
+   m_pPrivate->AddFd(fd, nullptr);
+}
+
+
 void CFdSet::RemoveFd(int fd)
 {
    m_pPrivate->RemoveFd(fd);
@@ -195,7 +204,12 @@ void CFdSet::RemoveFd(int fd)
 
 CFdSetRetval CFdSet::Select()
 {
-   return m_pPrivate->Select();
+   return m_pPrivate->Select(nullptr);
+}
+
+CFdSetRetval CFdSet::Select(Callback cb)
+{
+   return m_pPrivate->Select(cb);
 }
 
 void CFdSet::UnBlock()
