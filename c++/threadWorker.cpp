@@ -29,6 +29,7 @@
 #include <pthread.h>
 #include <sched.h>
 #include <errno.h>
+#include <string.h>
 
 using namespace utils;
 
@@ -106,7 +107,7 @@ std::tuple<EScheduling,int> CThreadWorker::getScheduling() const noexcept
     sched_param prio;
     int policy;
     if (pthread_getschedparam(m_thread.native_handle(), &policy, &prio) == -1) {
-        return std::tuple(EScheduling::FAIL, -1);
+        return std::tuple(EScheduling::FAILED, -1);
     }
 
     EScheduling sched;
@@ -117,7 +118,7 @@ std::tuple<EScheduling,int> CThreadWorker::getScheduling() const noexcept
 		case SCHED_RR:    sched = EScheduling::RR;    break;
 		case SCHED_BATCH: sched = EScheduling::BATCH; break;
 		case SCHED_IDLE:  sched = EScheduling::IDLE;  break;
-        default:          sched = EScheduling::FAIL;  break;
+        default:          sched = EScheduling::FAILED;  break;
     }
     return std::tuple(sched, prio.sched_priority);
 }

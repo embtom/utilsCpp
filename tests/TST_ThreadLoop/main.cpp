@@ -37,7 +37,7 @@ TEST(ThreadLoop__Test, basicTest)
     };
 
     utils::CThreadLoop threadTest (threadFunc, threadName, threadName);
-    threadTest.setThreadParam(EScheduling::OTHER, 0);
+    threadTest.setThreadParam(utils::EScheduling::OTHER, 0);
     threadTest.start(threadInterval);
     threadTest.waitUntilFinished();
 
@@ -45,7 +45,7 @@ TEST(ThreadLoop__Test, basicTest)
     threadTest.start(threadInterval);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    EXPECT_EQ(threadTest.getScheduler(), EScheduling::OTHER);
+    EXPECT_EQ(threadTest.getScheduler(), utils::EScheduling::OTHER);
     EXPECT_EQ(threadTest.getPrio(), 0);
     EXPECT_EQ(threadTest.getName(), threadName);
     threadTest.waitUntilFinished();
@@ -56,7 +56,7 @@ TEST(ThreadLoop__Test, basicTest)
     threadTest.start(threadInterval);
 
     utils::CThreadLoop moveObj (std::move(threadTest));
-    EXPECT_EQ(moveObj.getScheduler(), EScheduling::OTHER);
+    EXPECT_EQ(moveObj.getScheduler(), utils::EScheduling::OTHER);
     EXPECT_EQ(moveObj.getPrio(), 0);
     moveObj.waitUntilFinished();
 }
@@ -78,11 +78,11 @@ TEST(ThreadLoop__Test, cyclicTest)
         };
        utils::CThreadLoop a (func, "testWorker", passIntThread, passStringThread);
        a.start(std::chrono::milliseconds(1000));
-       a.setThreadParam(EScheduling::OTHER, 0);
+       a.setThreadParam(utils::EScheduling::OTHER, 0);
        b = std::move(a);
     }
 
-    EXPECT_EQ(b.getScheduler(), EScheduling::OTHER);
+    EXPECT_EQ(b.getScheduler(), utils::EScheduling::OTHER);
     EXPECT_EQ(b.getPrio(), 0);
     std::this_thread::sleep_for(std::chrono::seconds(10));
 }

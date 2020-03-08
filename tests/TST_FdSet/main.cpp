@@ -5,21 +5,16 @@
 #include <condition_variable>
 #include <unistd.h>
 #include <fdSet.h>
+#include <threadLoop.h>
 
-#define ANSI_TXT_GRN                "\033[0;32m"
-#define ANSI_TXT_MGT                "\033[0;35m" //Magenta
-#define ANSI_TXT_DFT                "\033[0;0m" //Console default
 #define GTEST_BOX                   "[     cout ] "
-#define COUT_GTEST                  ANSI_TXT_GRN << GTEST_BOX
-#define COUT_GTEST_MGT              COUT_GTEST << ANSI_TXT_DFT
 
+// TEST(EnumReflect, value)
+// {
+//     utils::CFdSet fdSet;
 
-TEST(EnumReflect, value)
-{
-    utils::CFdSet fdSet;
-
-    fdSet.UnBlock();
-}
+//     fdSet.UnBlock();
+// }
 
 class CFdSetTest : public ::testing::Test {
 protected:
@@ -178,6 +173,56 @@ TEST_F(CFdSetTest, CheckMultipleFdHandling)
     EXPECT_EQ(status, std::cv_status::no_timeout);
 
     m_fdSet.UnBlock();
+}
+
+#define NUMBER_OF_TEST_PIPES    100
+TEST(CFdSetSelect, CallbackAtUnblock)
+{
+    int senddummy1 {10};
+    int testFd[NUMBER_OF_TEST_PIPES][2] {0};
+    int numberOfRecived {0};
+
+    utils::CFdSet DutFdSet;
+
+    for (int i = 0; i < NUMBER_OF_TEST_PIPES; i++){
+        ASSERT_EQ(pipe(testFd[i]),0);
+        DutFdSet.AddFd(testFd[i][0]);
+    }
+
+    auto selectWorker = [&DutFdSet, &numberOfRecived, senddummy1]() {
+        std::cout << GTEST_BOX << "SelectWorker Interval start" << std::endl;
+        utils::CFdSetRetval ret = DutFdSet.Select([&numberOfRecived, senddummy1](int fd) {
+            int readDummy = 0;
+            EXPECT_GE(read(fd,&readDummy,sizeof(readDummy)),0);
+            EXPECT_EQ(senddummy1,readDummy);
+            numberOfRecived++;
+            std::cout << GTEST_BOX <<  "fd:"  << fd << " " << readDummy << std::endl;
+        });
+
+        if (utils::CFdSetRetval::UNBLOCK == ret) {
+            std::cout << GTEST_BOX << "Thread select Worker finished" << std::endl;
+            return true;
+        }
+        return false;
+    };
+
+    utils::CThreadLoop SelectLoop (selectWorker, "selectWorker");
+    SelectLoop.start();
+
+    for (int i = 0; i < NUMBER_OF_TEST_PIPES; i++) {
+        ASSERT_EQ(write(testFd[i][1],&senddummy1, sizeof(senddummy1)), sizeof(senddummy1));
+    }
+
+    while(numberOfRecived != NUMBER_OF_TEST_PIPES) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+
+    DutFdSet.UnBlock();
+    SelectLoop.waitUntilFinished();
+    for (int i = 0; i < NUMBER_OF_TEST_PIPES; i++) {
+        close(testFd[i][0]);
+        close(testFd[i][1]);
+    }
 }
 
 int main(int argc, char **argv)

@@ -7,5 +7,6 @@
         "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
         "-DUTILSCPP_BUILD_TEST=ON"
     ],
-    "cmakeExplorer.buildDir": "build/GCC for x86_64-linux-gnu 7.4.0_Debug",
+    "cmakeExplorer.cmakeIntegration": true,
+    "cmakeExplorer.buildDir": "build/GCC for x86_64-linux-gnu 7.4.0_${buildType}",
 }
