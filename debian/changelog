@@ -2,13 +2,13 @@ utilscpp (1.2.0) bionic; urgency=medium
 
   * Extend FdSet with Callback at Select
 
- -- Thomas Willetal <t.willetal@gmail.com>  Tue, 08 MARCH 2020 09:00:00 +0200
+ -- Thomas Willetal <t.willetal@gmail.com>  Tue, 08 Mar 2020 09:00:00 +0200
 
 utilscpp (1.1.0) bionic; urgency=medium
 
   * Add of threadLoop util
 
- -- Thomas Willetal <t.willetal@gmail.com>  Tue, 05 MARCH 2020 09:00:00 +0200
+ -- Thomas Willetal <t.willetal@gmail.com>  Tue, 05 Mar 2020 09:00:00 +0200
 
 utilscpp (1.0.0) bionic; urgency=medium
 
