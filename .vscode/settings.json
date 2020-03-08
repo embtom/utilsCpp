@@ -9,7 +9,4 @@
     ],
     "cmakeExplorer.cmakeIntegration": true,
     "cmakeExplorer.buildDir": "build/GCC for x86_64-linux-gnu 7.4.0_${buildType}",
-    "files.associations": {
-        "condition_variable": "cpp"
-    },
 }

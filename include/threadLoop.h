@@ -71,6 +71,10 @@ public:
         m_worker->start(interval);
     }
 
+    void start() noexcept {
+        m_worker->start(std::chrono::milliseconds::zero());
+    }
+
     void stop() noexcept {
         m_worker->stop();
     }

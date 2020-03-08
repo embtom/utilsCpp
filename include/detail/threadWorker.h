@@ -34,19 +34,18 @@
 #include <functional>
 #include <thread>
 #include <chrono>
-#include <enum_reflect.hpp>
-
-DECLARE_ENUM(EScheduling, int,
-    OTHER,
-    FIFO,
-    RR,
-    BATCH,
-	IDLE,
-    FAIL
-);
 
 namespace utils
 {
+    enum class EScheduling
+    {
+        OTHER,
+        FIFO,
+        RR,
+        BATCH,
+	    IDLE,
+        FAILED
+    };
 
 template <typename T>
 struct is_string: public std::integral_constant<bool,
@@ -157,7 +156,7 @@ private:
     mutable std::thread         m_thread;
     std::function<void(void)>   m_threadFunc;
 
-    EScheduling                 m_sched {EScheduling::FAIL};
+    EScheduling                 m_sched {EScheduling::FAILED};
     int                         m_prio {0};
     EThreadParam                m_threadState {EThreadParam::NOTHING};
     std::string                 m_name;
