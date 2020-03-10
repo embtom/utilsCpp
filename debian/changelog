@@ -1,6 +1,7 @@
-utilscpp (1.2.0) bionic; urgency=medium
+utilscpp (1.2.1) bionic; urgency=medium
 
   * Extend FdSet with Callback at Select
+  * Const correctness at fdSet
 
  -- Thomas Willetal <t.willetal@gmail.com>  Tue, 08 Mar 2020 09:00:00 +0200
 

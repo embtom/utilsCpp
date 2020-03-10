@@ -61,9 +61,9 @@ public:
    void AddFd(int fd, Callback cb);
    void AddFd(int fd);
    void RemoveFd(int fd);
-   CFdSetRetval Select();
-   CFdSetRetval Select(Callback cb);
-   void UnBlock();
+   CFdSetRetval Select() const;
+   CFdSetRetval Select(Callback cb) const;
+   void UnBlock() const;
 private:
    std::unique_ptr<CFdSetPrivate>   m_pPrivate;
 };

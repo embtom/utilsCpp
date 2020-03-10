@@ -225,6 +225,33 @@ TEST(CFdSetSelect, CallbackAtUnblock)
     }
 }
 
+TEST(CFdSetSelect, OneContext)
+{
+    int senddummy1 {10};
+    int testFd[2] {0};
+    utils::CFdSet DutFdSet;
+
+    ASSERT_EQ(pipe(testFd),0);
+    DutFdSet.AddFd(testFd[0]);
+    ASSERT_EQ(write(testFd[1],&senddummy1, sizeof(senddummy1)), sizeof(senddummy1));
+
+    utils::CFdSetRetval ret;
+    do
+    {
+        ret = DutFdSet.Select([&DutFdSet,senddummy1](int fd)
+        {
+            int readDummy = 0;
+            std::cout << " unblock Fd: " << fd << std::endl;
+            EXPECT_GE(read(fd,&readDummy,sizeof(readDummy)),0);
+            EXPECT_EQ(senddummy1,readDummy);
+            DutFdSet.UnBlock();
+        });
+    } while (ret == utils::CFdSetRetval::OK);
+
+    close(testFd[0]);
+    close(testFd[1]);
+}
+
 int main(int argc, char **argv)
 {
     testing::InitGoogleTest(&argc, argv);
