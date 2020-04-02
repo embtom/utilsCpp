@@ -273,6 +273,11 @@ public:
       return m_storage.ptr;
    }
 
+   constexpr span<char> as_byte() const noexcept
+   {
+      return span<char>(reinterpret_cast<char*>(data()),size_bytes());
+   }
+
    // iterator support
    constexpr iterator begin() const noexcept
    {

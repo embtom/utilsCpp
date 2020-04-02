@@ -1,3 +1,9 @@
+
+#include <iostream>
+#include <cstdint>
+#include <cstring>
+#include<stdio.h>
+#include<string.h>
 #include <gtest/gtest.h>
 #include <span.h>
 #include <vector>
@@ -199,6 +205,25 @@ TEST(SpanTest, std_String)
     EXPECT_EQ(std::equal(stringSpan2.begin(),stringSpan2.end(),testString.begin()), true);
 }
 
+
+struct txData
+{
+    uint32_t a1;
+    uint16_t b2;
+};
+
+
+TEST(SpanTest, as_byte)
+{
+    txData data {0xffAABB00,0xffAA};
+    utils::span spanTxData(data);
+
+    char rawData[spanTxData.size_bytes()];
+    std::memcpy(rawData, spanTxData.data(),spanTxData.size_bytes());
+    utils::span<char> spanRaw = spanTxData.as_byte();
+
+    EXPECT_EQ(std::memcmp(spanRaw.data(),rawData,spanRaw.size()), 0);
+}
 
 int main(int argc, char **argv)
 {
