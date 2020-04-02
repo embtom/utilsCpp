@@ -1,3 +1,9 @@
+utilscpp (1.2.2) bionic; urgency=medium
+
+  * cast span<T> to span<char> 
+
+ -- Thomas Willetal <t.willetal@gmail.com>  Tue, 02 Apr 2020 09:00:00 +0200
+
 utilscpp (1.2.1) bionic; urgency=medium
 
   * Extend FdSet with Callback at Select

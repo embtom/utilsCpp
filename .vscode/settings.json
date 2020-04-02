@@ -8,5 +8,5 @@
         "-DUTILSCPP_BUILD_TEST=ON"
     ],
     "cmakeExplorer.cmakeIntegration": true,
-    "cmakeExplorer.buildDir": "build/GCC for x86_64-linux-gnu 7.4.0_${buildType}",
+    "cmakeExplorer.buildDir": "build/GCC for x86_64-linux-gnu 7.5.0_${buildType}",
 }
