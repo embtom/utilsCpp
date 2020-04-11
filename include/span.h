@@ -273,9 +273,10 @@ public:
       return m_storage.ptr;
    }
 
-   constexpr span<char> as_byte() const noexcept
+   constexpr auto as_byte() const noexcept
    {
-      return span<char>(reinterpret_cast<char*>(data()),size_bytes());
+      using byteType = typename std::conditional_t<std::is_const_v<element_type>, std::add_const_t<uint8_t>, uint8_t>;
+      return span<byteType>(reinterpret_cast<byteType *>(data()),size_bytes());
    }
 
    // iterator support

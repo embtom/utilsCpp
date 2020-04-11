@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(utilsCpp
     LANGUAGES CXX
-    VERSION 1.2.1)
+    VERSION 1.2.3)
 include(GNUInstallDirs)
 
 ######################################################
