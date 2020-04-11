@@ -216,13 +216,21 @@ struct txData
 TEST(SpanTest, as_byte)
 {
     txData data {0xffAABB00,0xffAA};
-    utils::span spanTxData(data);
+    const txData& rData = data;
 
+    utils::span spanTxData(data);
     char rawData[spanTxData.size_bytes()];
     std::memcpy(rawData, spanTxData.data(),spanTxData.size_bytes());
-    utils::span<char> spanRaw = spanTxData.as_byte();
-
+    utils::span spanRaw = spanTxData.as_byte();
     EXPECT_EQ(std::memcmp(spanRaw.data(),rawData,spanRaw.size()), 0);
+
+    utils::span cSpanTxData (rData);
+    utils::span<const uint8_t> cSpanRaw1 = cSpanTxData.as_byte();
+    //with auto type deduction
+    utils::span cSpanRaw2 = cSpanTxData.as_byte();
+
+    EXPECT_EQ(cSpanRaw2.size(), cSpanRaw2.size_bytes());
+    EXPECT_EQ(sizeof(txData), cSpanRaw2.size_bytes());
 }
 
 int main(int argc, char **argv)
