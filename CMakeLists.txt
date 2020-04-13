@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(utilsCpp
     LANGUAGES CXX
-    VERSION 1.2.3)
+    VERSION 1.2.4)
 include(GNUInstallDirs)
 
 ######################################################
@@ -31,6 +31,7 @@ set(UTILSCPP_HEADER
     "include/make_vector.hpp"
     "include/map_container.hpp"
     "include/span.h"
+    "include/templateHelpers.h"
     "include/threadLoop.h"
     "include/detail/threadWorker.h"
     "include/unique_opaque.h"

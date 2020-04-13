@@ -34,7 +34,7 @@
 #include <functional>
 #include <memory>
 #include <threadWorker.h>
-
+#include <templateHelpers.h>
 
 namespace utils
 {

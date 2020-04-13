@@ -1,3 +1,9 @@
+utilscpp (1.2.4) bionic; urgency=medium
+
+  * add template helpers
+
+ -- Thomas Willetal <t.willetal@gmail.com>  Tue, 13 Apr 2020 09:00:00 +0200
+
 utilscpp (1.2.3) bionic; urgency=medium
 
   * fix const correctness at "span::as_byte" cast
