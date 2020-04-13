@@ -1,7 +1,7 @@
 // make_vector.hpp
 // https://tristanbrindle.com/posts/beware-copies-initializer-list
 //
-// Copyright (c) 2019 Tristan Brindle (tcbrindle at gmail dot com)
+// Copyright (c) 2020 Tristan Brindle (tcbrindle at gmail dot com)
 // Distributed under the Boost Software License, Version 1.0. (See
 //  http://www.boost.org/LICENSE_1_0.txt)
 

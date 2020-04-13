@@ -1,6 +1,6 @@
 /*
  * This file is part of the EMBTOM project
- * Copyright (c) 2018-2019 Thomas Willetal
+ * Copyright (c) 2018-2020 Thomas Willetal
  * (https://github.com/embtom)
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -34,6 +34,7 @@
 #include <functional>
 #include <thread>
 #include <chrono>
+#include <templateHelpers.h>
 
 namespace utils
 {
@@ -46,14 +47,6 @@ namespace utils
 	    IDLE,
         FAILED
     };
-
-template <typename T>
-struct is_string: public std::integral_constant<bool,
-        std::is_same<char*, typename std::decay<T>::type>::value ||
-        std::is_same<const char*, typename std::decay<T>::type>::value ||
-        std::is_same<std::string, typename std::decay<T>::type>::value> { };
-template <>
-struct is_string<std::string> : std::false_type {};
 
 //*****************************************************************************
 //! \brief CThreadWorker
